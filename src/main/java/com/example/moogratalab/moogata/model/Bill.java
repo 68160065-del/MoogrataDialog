@@ -111,7 +111,9 @@ public class Bill {
         this.openedBy = openedBy;
     }
 
-    /*** สำหรับบิลที่เพิ่งเปิด — ยังไม่มียอด/เวลาปิด (ให้ฐานข้อมูล default ให้)*/
+    /**
+     * * สำหรับบิลที่เพิ่งเปิด — ยังไม่มียอด/เวลาปิด (ให้ฐานข้อมูล default ให้)
+     */
     public Bill(int tableId, int openedBy) {
         this(-1, tableId, STATUS_OPEN, null, null, 0, 0, 0, openedBy);
     }
@@ -136,5 +138,9 @@ public class Bill {
         bill.setChangeAmount(rs.getDouble("change_amount"));
         bill.setOpenedBy(rs.getInt("opened_by"));
         return bill;
+    }
+
+    public boolean isClosed() {
+        return "ปิด".equals(this.status) || "CLOSED".equalsIgnoreCase(this.status);
     }
 }

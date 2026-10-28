@@ -27,6 +27,10 @@ public class Employee {
         this.password = password;
         this.role = role;
     }
+    public Employee(int id, String name, String position) {
+        this(id, name, position, "", 1);
+    }
+    
     public Employee(String name, String position, String password, int role) {
         this(-1, name, position, password, role);
     }
