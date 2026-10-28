@@ -19,124 +19,38 @@ import javax.swing.JOptionPane;
 
 public class PosFrame extends javax.swing.JFrame {
 
-// Table status colors — Green: Vacant / Pink: In Use / Yellow: Awaiting Payment
+// Table status colors
     private static final java.awt.Color COLOR_VACANT = new java.awt.Color(0xCDE5AD);
     private static final java.awt.Color COLOR_IN_USE = new java.awt.Color(0xF2C5D5);
     private static final java.awt.Color COLOR_AWAITING = new java.awt.Color(0xF6E991);
 
+    private final Employee employee;
     private final TableService tableService = new TableService();
     private final BillService billService = new BillService();
 
-    // Table data loaded from the database — ordered to match btnTable1–6
     private List<DiningTable> tables = new ArrayList<>();
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PosFrame.class.getName());
-    private Employee currentEmployee;
 
     public PosFrame(Employee employee) {
+        this.employee = employee;
         ThaiFont.apply();
-        this.currentEmployee = employee;
         initComponents();
-        initCustomComponents();
+        lblUser.setText("พนักงาน: " + employee.getName() + "(" + employee.getPosition() + ")");
         refreshTables();
         setLocationRelativeTo(null);
     }
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(PosFrame.class.getName());
 
     public PosFrame() {
-        ThaiFont.apply();
         initComponents();
-        initCustomComponents();
-        refreshTables();
-        setLocationRelativeTo(null);
+        this.employee = null;
     }
 
-    private void initCustomComponents() {
-        if (currentEmployee != null) {
-            String roleText = currentEmployee.getRole() == 1 ? "Manager" : "Cashier";
-            lblUser.setText("Employee: " + currentEmployee.getName() + " (" + roleText + ")");
-        }
-
-        // Bind Action Events to Table Buttons 1-6 and Refresh Button
-        btnTable1.addActionListener(e -> tableClicked(0));
-        btnTable2.addActionListener(e -> tableClicked(1));
-        btnTable3.addActionListener(e -> tableClicked(2));
-        btnTable4.addActionListener(e -> tableClicked(3));
-        btnTable5.addActionListener(e -> tableClicked(4));
-        btnTable6.addActionListener(e -> tableClicked(5));
-        btnRefresh.addActionListener(e -> refreshTables());
-    }
-
-    public void refreshTables() {
-        javax.swing.JButton[] tableButtons = {
-            btnTable1, btnTable2, btnTable3, btnTable4, btnTable5, btnTable6
-        };
-        tables = tableService.getAllTables();
-        int vacant = 0;
-        int inUse = 0;
-        for (int i = 0; i < tables.size() && i < tableButtons.length; i++) {
-            DiningTable table = tables.get(i);
-            javax.swing.JButton btn = tableButtons[i];
-            String detail;
-            java.awt.Color color;
-            if (DiningTable.STATUS_IN_USE.equals(table.getStatus())) {
-                detail = "In Use (" + table.getHeadcount() + " guests)";
-                color = COLOR_IN_USE;
-                inUse++;
-            } else if (DiningTable.STATUS_AWAITING.equals(table.getStatus())) {
-                detail = "Awaiting Payment";
-                color = COLOR_AWAITING;
-            } else {
-                detail = "Vacant";
-                color = COLOR_VACANT;
-                vacant++;
-            }
-            btn.setText("<html><center><b>Table " + table.getNumber() + "</b><br>" + detail + "</center></html>");
-            btn.setBackground(color);
-            btn.setOpaque(true);
-            btn.setBorderPainted(false);
-        }
-        lblSummary.setText("Vacant: " + vacant + " tables · Occupied: " + inUse + " tables");
-    }
-
-    private void tableClicked(int index) {
-        if (index >= tables.size()) return;
-        DiningTable table = tables.get(index);
-        if (table.isVacant()) {
-            String input = JOptionPane.showInputDialog(this,
-                    "Number of guests (Table " + table.getNumber() + "):",
-                    "Open Table", JOptionPane.QUESTION_MESSAGE);
-            if (input == null) {
-                return;
-            }
-            int headcount;
-            try {
-                headcount = Integer.parseInt(input.trim());
-            } catch (NumberFormatException ex) {
-                headcount = 0;
-            }
-            Bill bill = tableService.openTable(table, headcount, currentEmployee);
-            if (bill == null) {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to open table — must specify at least 1 guest\nor this table is already occupied.",
-                        "Open Table Failed", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            refreshTables();
-        } else if (DiningTable.STATUS_IN_USE.equals(table.getStatus())) {
-            Bill bill = billService.getOpenBillForTable(table.getId());
-            if (bill == null) {
-                JOptionPane.showMessageDialog(this,
-                        "Table is in use but no open bill was found — check database.",
-                        "Data Imbalance", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            // Open order screen for the existing bill
-            // OrderFrame orderFrame = new OrderFrame(this, currentEmployee, table, bill);
-            // orderFrame.setLocationRelativeTo(this);
-            // orderFrame.setVisible(true);
+    private void initUserLabel() {
+        if (employee != null) {
+            String roleText = employee.getRole() == 1 ? "Manager" : "Cashier";
+            lblUser.setText("Employee: " + employee.getName() + " (" + roleText + ")");
         } else {
-            JOptionPane.showMessageDialog(this,
-                    "Table " + table.getNumber() + " is awaiting payment.",
-                    "Awaiting Payment", JOptionPane.WARNING_MESSAGE);
+            lblUser.setText("(Testing - Not logged in)");
         }
     }
 
@@ -167,21 +81,28 @@ public class PosFrame extends javax.swing.JFrame {
         lblHeader.setText("Moo Krata Table Layout");
 
         btnTable1.setBackground(new java.awt.Color(204, 255, 204));
+        btnTable1.addActionListener(this::btnTable1ActionPerformed);
 
         btnTable2.setBackground(new java.awt.Color(204, 255, 204));
+        btnTable2.addActionListener(this::btnTable2ActionPerformed);
 
         btnTable3.setBackground(new java.awt.Color(255, 204, 204));
+        btnTable3.addActionListener(this::btnTable3ActionPerformed);
 
         btnTable4.setBackground(new java.awt.Color(204, 255, 204));
+        btnTable4.addActionListener(this::btnTable4ActionPerformed);
 
         btnTable5.setBackground(new java.awt.Color(204, 255, 204));
+        btnTable5.addActionListener(this::btnTable5ActionPerformed);
 
         btnTable6.setBackground(new java.awt.Color(204, 255, 204));
+        btnTable6.addActionListener(this::btnTable6ActionPerformed);
 
         lblSummary.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblSummary.setText("Vacant: 5 tables · Occupied: 1 table");
 
         btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(this::btnRefreshActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -256,6 +177,34 @@ public class PosFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnTable6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTable6ActionPerformed
+        tableClicked(5);
+    }//GEN-LAST:event_btnTable6ActionPerformed
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        refreshTables();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void btnTable1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTable1ActionPerformed
+        tableClicked(0);
+    }//GEN-LAST:event_btnTable1ActionPerformed
+
+    private void btnTable2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTable2ActionPerformed
+        tableClicked(1);        // TODO add your handling code here:
+    }//GEN-LAST:event_btnTable2ActionPerformed
+
+    private void btnTable3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTable3ActionPerformed
+        tableClicked(2);
+    }//GEN-LAST:event_btnTable3ActionPerformed
+
+    private void btnTable4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTable4ActionPerformed
+        tableClicked(3);        // TODO add your handling code here:
+    }//GEN-LAST:event_btnTable4ActionPerformed
+
+    private void btnTable5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTable5ActionPerformed
+        tableClicked(4);        // TODO add your handling code here:
+    }//GEN-LAST:event_btnTable5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -279,6 +228,78 @@ public class PosFrame extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new PosFrame().setVisible(true));
+    }
+
+    public void refreshTables() {
+        // ปุ่มที่วางไว้ 6 ปุ่ม จับคู่เป็นอาเรย์ตามลำดับโต๊ะ เพื่อวนจับคู่กับข้อมูลจากฐานข้อมูล
+        javax.swing.JButton[] tableButtons = {
+            btnTable1, btnTable2, btnTable3, btnTable4, btnTable5, btnTable6
+        };
+        tables = tableService.getAllTables(); // หากใน TableService ใช้ getAll() ให้เปลี่ยนเป็น tableService.getAll();
+        int vacant = 0;
+        int inUse = 0;
+        for (int i = 0; i < tables.size() && i < tableButtons.length; i++) {
+            DiningTable table = tables.get(i);
+            javax.swing.JButton btn = tableButtons[i];
+            String detail;
+            java.awt.Color color;
+            if (DiningTable.STATUS_IN_USE.equals(table.getStatus())) {
+                detail = "ใช้งาน (" + table.getHeadcount() + " คน)";
+                color = COLOR_IN_USE;
+                inUse++;
+            } else if (DiningTable.STATUS_AWAITING.equals(table.getStatus())) {
+                detail = "รอชำระ";
+                color = COLOR_AWAITING;
+            } else {
+                detail = "ว่าง";
+                color = COLOR_VACANT;
+                vacant++;
+            }
+            btn.setText("โต๊ะ " + table.getNumber() + " : " + detail);
+            btn.setBackground(color);
+            btn.setOpaque(true);
+            btn.setBorderPainted(false);
+        }
+        lblSummary.setText("ว่าง " + vacant + " โต๊ะ · ใช้งาน " + inUse + " โต๊ะ");
+    }
+
+    private void tableClicked(int index) {
+        DiningTable table = tables.get(index);
+        if (table.isVacant()) {
+            // เปิดโต๊ะ: ถามจำนวนลูกค้าก่อน (กฎ: ต้องใส่จำนวนคน จึงเปิดโต๊ะได้)
+            String input = JOptionPane.showInputDialog(this,
+                    "จำนวนลูกค้า (โต๊ะ " + table.getNumber() + "):",
+                    "เปิดโต๊ะ", JOptionPane.QUESTION_MESSAGE);
+            if (input == null) {
+                return; // กดยกเลิก
+            }
+            int headcount;
+            try {
+                headcount = Integer.parseInt(input.trim());
+            } catch (NumberFormatException ex) {
+                headcount = 0;
+            }
+            Bill bill = tableService.openTable(table, headcount, employee);
+            if (bill == null) {
+                JOptionPane.showMessageDialog(this,
+                        "เปิดโต๊ะไม่สำเร็จ — ต้องระบุจำนวนลูกค้าอย่างน้อย 1 คน\nหรือโต๊ะนี้มีลูกค้านั่งอยู่แล้ว",
+                        "เปิดโต๊ะไม่สำเร็จ", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            refreshTables();
+        } else if (DiningTable.STATUS_IN_USE.equals(table.getStatus())) {
+            Bill bill = billService.getOpenByTableId(table.getId()); // หากใช้ชื่อ getOpenByTableId หรือ getOpenBillForTable ให้ปรับให้ตรงกับ BillService
+            if (bill == null) {
+                JOptionPane.showMessageDialog(this,
+                        "โต๊ะนี้ใช้งานอยู่แต่ไม่พบบิล — ตรวจฐานข้อมูล",
+                        "ข้อมูลไม่สมดุล", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // เปิดหน้าสั่งอาหารของบิลเดิม (สั่งเพิ่มได้เรื่อย ๆ จนกว่าจะเช็คบิล)
+            OrderFrame orderFrame = new OrderFrame(this, employee, table, bill);
+            orderFrame.setLocationRelativeTo(this);
+            orderFrame.setVisible(true);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

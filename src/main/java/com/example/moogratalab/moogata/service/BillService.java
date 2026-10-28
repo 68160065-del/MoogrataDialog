@@ -21,6 +21,10 @@ public class BillService {
     private final BillItemDao billItemDao = new BillItemDao();
     private final TableService tableService = new TableService();
 
+    public Bill getOpenBillForTable(int tableId) {
+        return billDao.getOpenByTableId(tableId);
+    }
+
     public Bill getOpenByTableId(int tableId) {
         return billDao.getOpenByTableId(tableId);
     }

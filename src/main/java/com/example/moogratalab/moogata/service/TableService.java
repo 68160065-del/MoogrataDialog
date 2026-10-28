@@ -24,6 +24,10 @@ public class TableService {
         return tableDao.getAll();
     }
 
+    public List<DiningTable> getAllTables() {
+        return getAll();
+    }
+
     public DiningTable getById(int id) {
         return tableDao.get(id);
     }
