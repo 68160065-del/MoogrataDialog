@@ -2,14 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.example.moogata.service;
-
+package com.example.moogratalab.moogata.service;
 /**
  *
  * @author USER
  */
-import com.example.moogata.dao.EmployeeDao;
-import com.example.moogata.model.Employee;
+import com.example.moogratalab.moogata.dao.EmployeeDao;
+import com.example.moogratalab.moogata.model.Employee;
 import java.util.List;
 
 public class EmployeeService {

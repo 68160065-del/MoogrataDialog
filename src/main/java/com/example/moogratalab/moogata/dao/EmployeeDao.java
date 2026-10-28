@@ -1,8 +1,7 @@
-package com.example.moogata.dao;
+package com.example.moogratalab.moogata.dao;
 
 import com.example.moogratalab.helper.DatabaseHelper;
-import com.example.moogata.model.Employee;
-import java.sql.Connection;
+import com.example.moogratalab.moogata.model.Employee;import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

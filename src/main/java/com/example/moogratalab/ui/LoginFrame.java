@@ -4,8 +4,8 @@
  */
 package com.example.moogratalab.ui;
 
-import com.example.moogata.model.Employee;
-import com.example.moogata.service.EmployeeService;
+import com.example.moogratalab.moogata.model.Employee;
+import com.example.moogratalab.moogata.service.EmployeeService;
 import javax.swing.JOptionPane;
 
 /**

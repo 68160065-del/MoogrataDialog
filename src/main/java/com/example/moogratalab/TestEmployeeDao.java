@@ -1,8 +1,8 @@
 package com.example.moogratalab;
 
-import com.example.moogata.dao.EmployeeDao;
+import com.example.moogratalab.moogata.dao.EmployeeDao;
 import com.example.moogratalab.helper.DatabaseHelper;
-import com.example.moogata.model.Employee;
+import com.example.moogratalab.moogata.model.Employee;
 
 public class TestEmployeeDao {
 

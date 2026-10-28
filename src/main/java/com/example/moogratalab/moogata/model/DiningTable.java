@@ -21,20 +21,22 @@ public class DiningTable {
     public static final String STATUS_VACANT = "ว่าง";
     public static final String STATUS_IN_USE = "ใช้งาน";
     public static final String STATUS_AWAITING = "รอชำระ";
-    
+
     public DiningTable(int id, int number, String status, int headcount) {
-    this.id = id;
-    this.number = number;
-    this.status = status;
-    this.headcount = headcount;
-}
-     public DiningTable(int number, String status, int headcount) {
+        this.id = id;
+        this.number = number;
+        this.status = status;
+        this.headcount = headcount;
+    }
+
+    public DiningTable(int number, String status, int headcount) {
         this(-1, number, status, headcount);
     }
+
     public DiningTable() {
         this.id = -1;
     }
-     
+
     public int getId() {
         return id;
     }
@@ -66,17 +68,17 @@ public class DiningTable {
     public void setHeadcount(int headcount) {
         this.headcount = headcount;
     }
-    
+
     public boolean isVacant() {
-    return STATUS_VACANT.equals(status);
-}
-    
+        return STATUS_VACANT.equals(status);
+    }
+
     public static DiningTable fromRS(ResultSet rs) throws SQLException {
-    DiningTable table = new DiningTable();
-    table.setId(rs.getInt("table_id"));
-    table.setNumber(rs.getInt("table_number"));
-    table.setStatus(rs.getString("status"));
-    table.setHeadcount(rs.getInt("headcount"));
-    return table;
-}
+        DiningTable table = new DiningTable();
+        table.setId(rs.getInt("table_id"));
+        table.setNumber(rs.getInt("table_number"));
+        table.setStatus(rs.getString("status"));
+        table.setHeadcount(rs.getInt("headcount"));
+        return table;
+    }
 }

@@ -111,9 +111,7 @@ public class Bill {
         this.openedBy = openedBy;
     }
 
-    /**
-     * สำหรับบิลที่เพิ่งเปิด — ยังไม่มียอด/เวลาปิด (ให้ฐานข้อมูล default ให้)
-     */
+    /*** สำหรับบิลที่เพิ่งเปิด — ยังไม่มียอด/เวลาปิด (ให้ฐานข้อมูล default ให้)*/
     public Bill(int tableId, int openedBy) {
         this(-1, tableId, STATUS_OPEN, null, null, 0, 0, 0, openedBy);
     }
@@ -125,17 +123,18 @@ public class Bill {
     public boolean isOpen() {
         return STATUS_OPEN.equals(status);
     }
+
     public static Bill fromRS(ResultSet rs) throws SQLException {
-    Bill bill = new Bill();
-    bill.setId(rs.getInt("bill_id"));
-    bill.setTableId(rs.getInt("table_id"));
-    bill.setStatus(rs.getString("status"));
-    bill.setOpenedAt(rs.getString("opened_at"));
-    bill.setClosedAt(rs.getString("closed_at"));
-    bill.setTotal(rs.getDouble("total"));
-    bill.setCashReceived(rs.getDouble("cash_received"));
-    bill.setChangeAmount(rs.getDouble("change_amount"));
-    bill.setOpenedBy(rs.getInt("opened_by"));
-    return bill;
-}
+        Bill bill = new Bill();
+        bill.setId(rs.getInt("bill_id"));
+        bill.setTableId(rs.getInt("table_id"));
+        bill.setStatus(rs.getString("status"));
+        bill.setOpenedAt(rs.getString("opened_at"));
+        bill.setClosedAt(rs.getString("closed_at"));
+        bill.setTotal(rs.getDouble("total"));
+        bill.setCashReceived(rs.getDouble("cash_received"));
+        bill.setChangeAmount(rs.getDouble("change_amount"));
+        bill.setOpenedBy(rs.getInt("opened_by"));
+        return bill;
+    }
 }

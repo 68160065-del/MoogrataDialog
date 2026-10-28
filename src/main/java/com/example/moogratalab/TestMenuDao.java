@@ -1,10 +1,9 @@
 package com.example.moogratalab;
 
-import com.example.moogata.dao.MenuDao;
-import com.example.moogata.model.Menu;
 import com.example.moogratalab.helper.DatabaseHelper;
+import com.example.moogratalab.moogata.dao.MenuDao;
+import com.example.moogratalab.moogata.model.Menu;
 import java.util.List;
-
 public class TestMenuDao {
     public static void main(String[] args) {
         try {

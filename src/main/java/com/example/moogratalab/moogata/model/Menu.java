@@ -1,5 +1,4 @@
-package com.example.moogata.model;
-
+package com.example.moogratalab.moogata.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

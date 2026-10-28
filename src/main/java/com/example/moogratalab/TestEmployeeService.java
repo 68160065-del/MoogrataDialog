@@ -8,9 +8,9 @@ package com.example.moogratalab;
  *
  * @author USER
  */
+import com.example.moogratalab.moogata.model.Employee;
+import com.example.moogratalab.moogata.service.EmployeeService;
 import com.example.moogratalab.helper.DatabaseHelper;
-import com.example.moogata.model.Employee;
-import com.example.moogata.service.EmployeeService;
 
 public class TestEmployeeService {
     public static void main(String[] args) {
