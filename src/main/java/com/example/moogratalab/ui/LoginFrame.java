@@ -15,11 +15,12 @@ import javax.swing.JOptionPane;
 public class LoginFrame extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
-
+    private final EmployeeService employeeService = new EmployeeService();
     /**
      * Creates new form LoginFrame
      */
     public LoginFrame() {
+        ThaiFont.apply(); // บังคับฟอนต์ไทยทั้งโปรแกรม — กันข้อความไทยเป็นกล่องเปล่าบนบาง JDK
         initComponents();
         setLocationRelativeTo(null); // null = กึ่งกลางหน้าจอ
     }
@@ -118,35 +119,27 @@ public class LoginFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
-        // getPassword() คืน char[] (ไม่ใช่ String) — เพื่อความปลอดภัย ต้องแปลงก่อนใช้
-        // getPassword() คืน char[] (ไม่ใช่ String) — เพื่อความปลอดภัย ต้องแปลงก่อนใช้
-        String login = txtLogin.getText().trim();
-        String password = new String(txtPassword.getPassword());
+String login = txtLogin.getText();
+    String password = new String(txtPassword.getPassword());
+    
+    Employee employee = employeeService.login(login, password);
+    if (employee == null) {
+        JOptionPane.showMessageDialog(this, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", "เข้าสู่ระบบล้มเหลว", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        EmployeeService employeeService = new EmployeeService();
-        Employee employee = employeeService.login(login, password);
-
-        if (employee == null) {
-            JOptionPane.showMessageDialog(this,
-                    "Incorrect username or password",
-                    "Login failed", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // (Step 6 จะเปลี่ยนข้อความชั่วคราวนี้เป็นการเปิดหน้าจัดการพนักงาน)
-        JOptionPane.showMessageDialog(this,
-                "welcome " + employee.getName() + " (" + employee.getPosition() + ")",
-                "Login failed", JOptionPane.INFORMATION_MESSAGE);
-        if (employee.getRole() != 1) {
-            JOptionPane.showMessageDialog(this,
-                    employee.getName() + "Not a manager; therefore, unable to access the employee management page.",
-                    "No access rights", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+    // แยกการเปิดหน้าจอตาม Role (1 = ผู้จัดการ, 2 = พนักงาน/แคชเชียร์)
+    if (employee.getRole() == 1) {
         EmployeeFrame employeeFrame = new EmployeeFrame(employee);
         employeeFrame.setLocationRelativeTo(this);
         employeeFrame.setVisible(true);
-        this.dispose();
+    } else {
+        PosFrame posFrame = new PosFrame(employee); // หากยังไม่สร้าง PosFrame บรรทัดนี้จะแดงชั่วคราว
+        posFrame.setLocationRelativeTo(this);
+        posFrame.setVisible(true);
+    }
+    
+    this.dispose(); // ปิดหน้าจอ Login      
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
